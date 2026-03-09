@@ -23,19 +23,30 @@ cursor.execute("""
     )
 """)
 
-answer = input("Press 1 to add a clothing item "
+main_menu = ("Press 1 to add a clothing item "
 "Press 2 to show all clothing items "
 "Press 3 to delete a item "
 "Press 4 to create an outfit "
+"Press 5 to see outfits "
 "press anything else to exit: ")
+
+def get_input(prompt):
+    value = input(prompt).lower()
+    if value == "menu" or value == "main menu":
+        return get_input(main_menu)
+    return value
+    
+answer = get_input(main_menu)
+
+
 
 # User Inputs
 # Asks user for category, type, and color of clothing item and adds it to the database
-while answer in ["1", "2", "3", "4"]:
+while answer in ["1", "2", "3", "4", "5"]:
     
     if answer == "1":
 
-        category = input("Enter category 1 for top 2 for bottom: ").lower()
+        category = get_input("Enter category 1 for top 2 for bottom: ").lower()
         if category == "1":
             category = "top"
         elif category == "2":               
@@ -44,20 +55,16 @@ while answer in ["1", "2", "3", "4"]:
             print("Invalid category. Please enter 1 for top or 2 for bottom.")
             continue
 
-        item_type = input("Enter type of clothing: ").lower()
+        item_type = get_input("Enter type of clothing: ").lower()
 
-        color = input("Enter color: ").lower()
+        color = get_input("Enter color: ").lower()
 
         cursor.execute("INSERT INTO clothing_item (category, item_type, color) VALUES (?, ?, ?)", (category, item_type, color))
 
         connection.commit()
         print ("Clothing item added successfully!")
 
-        answer = input("Press 1 to add a clothing item "
-                    "Press 2 to show all clothing items "
-                    "Press 3 to delete a item "
-                    "Press 4 to create an outfit "
-                    "press anything else to exit: ")
+        answer = get_input(main_menu)
         
     elif answer == "2":
     # Retrieve and display all clothing items from the database
@@ -72,11 +79,7 @@ while answer in ["1", "2", "3", "4"]:
         for row in rows:
             print(row)
         
-        answer = input("Press 1 to add a clothing item "
-                    "Press 2 to show all clothing items "
-                    "Press 3 to delete a item " 
-                    "Press 4 to create an outfit "
-                    "press anything else to exit: ")
+        answer = get_input(main_menu)
         
     elif answer == "3":
 
@@ -89,7 +92,7 @@ while answer in ["1", "2", "3", "4"]:
         for row in rows:
             print(row[0])
 
-        item_id = input("Enter the ID of the item you want to delete: ")
+        item_id = get_input("Enter the ID of the item you want to delete: ")
 
         if not item_id.isdigit():
             print("Invalid ID. Please enter a numeric value.")
@@ -98,7 +101,7 @@ while answer in ["1", "2", "3", "4"]:
         if int(item_id) not in [row[0] for row in rows]:
             print("Item ID not found. Please enter a valid ID.")
             continue
-        confirm = input("Are you sure you want to delete this item? (Y/N): ").lower()
+        confirm = get_input("Are you sure you want to delete this item? (Y/N): ").lower()
 
         if confirm != "y":
             print("Deletion cancelled.")
@@ -109,18 +112,15 @@ while answer in ["1", "2", "3", "4"]:
         connection.commit()
         print("Item deleted successfully!")
 
-        answer = input("Press 1 to add a clothing item "
-                    "Press 2 to show all clothing items "
-                    "Press 3 to delete a item "
-                    "Press 4 to create an outfit "
-                    "press anything else to exit: ")
+        answer = get_input(main_menu)
+
     elif answer == "4":
         cursor.execute("SELECT id FROM clothing_item WHERE category = 'top'")
         top_rows = cursor.fetchall()
         print("Available tops:")
         for row in top_rows:
             print(row[0])
-        top_id = input("Enter the ID of the top you want to use: ")
+        top_id = get_input("Enter the ID of the top you want to use: ")
         if not top_id.isdigit():
             print("Invalid ID. Please enter a numeric value.")
             continue
@@ -133,7 +133,7 @@ while answer in ["1", "2", "3", "4"]:
         print("Available bottoms:")
         for row in bottom_rows:
             print(row[0])
-        bottom_id = input("Enter the ID of the bottom you want to use: ")
+        bottom_id = get_input("Enter the ID of the bottom you want to use: ")
         if not bottom_id.isdigit():
             print("Invalid ID. Please enter a numeric value.")
             continue
@@ -145,7 +145,7 @@ while answer in ["1", "2", "3", "4"]:
         connection.commit()
         print("Outfit created successfully!")
 
-        outfit_answer = input("Press 1 to show all outfits "
+        outfit_answer = get_input("Press 1 to show all outfits "
                             "press anything else to return to main menu: ")
         if outfit_answer == "1":
             cursor.execute("SELECT id, top_id, bottom_id FROM outfit")
@@ -155,11 +155,16 @@ while answer in ["1", "2", "3", "4"]:
                 print(outfit)
 
         
-        answer = input("Press 1 to add a clothing item "
-                    "Press 2 to show all clothing items "
-                    "Press 3 to delete a item "
-                    "Press 4 to create an outfit "
-                    "press anything else to exit: ")
+        answer = get_input(main_menu)
+
+    elif answer == "5":
+        cursor.execute("SELECT id, top_id, bottom_id FROM outfit")
+        outfits = cursor.fetchall()
+        print("Showing all outfits...")
+        for outfit in outfits:
+            print(outfit)
+
+        answer = get_input(main_menu)
 
 
 else:

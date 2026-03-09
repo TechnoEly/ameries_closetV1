@@ -1,32 +1,20 @@
 import sqlite3
 
-DB_PATH = "storage.db"
+def connect_cursor():
+    connection = sqlite3.connect("test.db")
+    cursor = connection.cursor()
+    return connection, cursor
 
-def get_connection():
-    con = sqlite3.connect(DB_PATH)
-    con.execute("PRAGMA foreign_keys = ON")
-    return con
-
-def cursor(con):
-    cur = con.cursor()
-    return cur
-
-
-def init_db(con, cur):
-#Table for Clothing separately made it so it could store both tops and bottoms
-#Useable for DATA
-    cur.execute("""
+def db_start(connection, cursor):
+    cursor.execute("""
         CREATE TABLE IF NOT EXISTS clothing_item (
             id INTEGER PRIMARY KEY,
             category TEXT NOT NULL CHECK(category IN ('top', 'bottom')),
-            color TEXT NOT NULL,
-            image_path TEXT NOT NULL,
-            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+            item_type TEXT NOT NULL,
+        color TEXT NOT NULL
         )
     """)
-# Table for outfit to exist should pull user input and make a total outfit
-# FOR DATA
-    cur.execute("""
+    cursor.execute("""
         CREATE TABLE IF NOT EXISTS outfit (
             id INTEGER PRIMARY KEY,
             top_id INTEGER NOT NULL,
@@ -36,31 +24,41 @@ def init_db(con, cur):
             FOREIGN KEY(bottom_id) REFERENCES clothing_item(id)
         )
     """)
+    return 
 
-    con.commit()
-    con.close()
+def get_item_id(cursor):
+       cursor.execute("SELECT * FROM clothing_item")
+       return cursor.fetchall()
 
-def add_outfit(top_id, bottom_id):
-    new_con = sqlite3.connect(DB_PATH)
-    new_cur = new_con.cursor()
-    new_cur.execute("INSERT INTO outfit(top_id, bottom_id) VALUES(?, ?)", (top_id, bottom_id))
-    new_con.commit()
-    new_con.close()
+def insert_item(cursor, category, item_type, color):
+    cursor.execute("INSERT INTO clothing_item (category, item_type, color) VALUES (?, ?, ?)", (category, item_type, color))
+
+def get_all_items(cursor):
+        cursor.execute("SELECT * FROM clothing_item")
+
+        return cursor.fetchall()
+
+def delete_item(cursor, item_id, connection):
+        cursor.execute("DELETE FROM clothing_item WHERE id = ?", (item_id,))
+        connection.commit()
+        return f"Item with ID {item_id} deleted successfully."
 
 
-def get_all_outfits():
-    con = sqlite3.connect(DB_PATH)
-    cur = con.cursor()
-    cur.execute("SELECT id, top_id, bottom_id FROM outfit ORDER BY id ASC")
-    rows = cur.fetchall()
-    con.close()
-    return rows
-rows = get_all_outfits()
-for row in rows:
-    id_, top_id, bottom_id = row
-    print(f'PRINTING {id_}, {top_id}, {bottom_id} PRINT SUCCESS')
+def get_top_items(cursor):
+        cursor.execute("SELECT id FROM clothing_item WHERE category = 'top'")
+        return cursor.fetchall()
 
-if __name__ == "__main__":
-    con = get_connection()
-    cur = con.cursor()
-    init_db(con, cur)
+def get_bottom_items(cursor):
+        cursor.execute("SELECT id FROM clothing_item WHERE category = 'bottom'")
+        return cursor.fetchall()
+
+def create_outfit(top_id, bottom_id, cursor, connection):
+        cursor.execute("INSERT INTO outfit (top_id, bottom_id) VALUES (?, ?)", (top_id, bottom_id))
+        connection.commit()
+
+def get_outfits(cursor):
+        cursor.execute("SELECT id, top_id, bottom_id FROM outfit")
+        return cursor.fetchall()
+
+def close_connection(connection):
+        connection.close()
