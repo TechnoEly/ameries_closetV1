@@ -1,7 +1,7 @@
 import sqlite3
 
 def connect_cursor():
-    connection = sqlite3.connect("test.db")
+    connection = sqlite3.connect("clothes.db")
     cursor = connection.cursor()
     return connection, cursor
 
@@ -43,6 +43,10 @@ def delete_item(cursor, item_id, connection):
         connection.commit()
         return f"Item with ID {item_id} deleted successfully."
 
+def get_clothing_item_by_id(item_id, cursor):
+        cursor.execute("SELECT * FROM clothing_item WHERE id = ?", (item_id,))
+        return cursor.fetchone()
+
 
 def get_top_items(cursor):
         cursor.execute("SELECT id FROM clothing_item WHERE category = 'top'")
@@ -56,9 +60,18 @@ def create_outfit(top_id, bottom_id, cursor, connection):
         cursor.execute("INSERT INTO outfit (top_id, bottom_id) VALUES (?, ?)", (top_id, bottom_id))
         connection.commit()
 
+def delete_outfit(outfit_id, cursor, connection):
+        cursor.execute("DELETE FROM outfit WHERE id = ?", (outfit_id,))
+        connection.commit()
+        return f"Outfit with ID {outfit_id} deleted successfully."
+
 def get_outfits(cursor):
         cursor.execute("SELECT id, top_id, bottom_id FROM outfit")
         return cursor.fetchall()
+
+def get_outfit_by_id(outfit_id, cursor):
+        cursor.execute("SELECT id, top_id, bottom_id FROM outfit WHERE id = ?", (outfit_id,))
+        return cursor.fetchone()
 
 def close_connection(connection):
         connection.close()
