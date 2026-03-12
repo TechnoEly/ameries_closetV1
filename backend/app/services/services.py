@@ -10,8 +10,8 @@ def database_setup():
     return connection, cursor
 
 # clothing item functions
-def add_clothing_item(category, item_type, color, cursor, connection):
-    database.insert_item(cursor, category, item_type, color)
+def add_clothing_item(category, item_type, color, image_path, cursor, connection):
+    database.insert_item(cursor, category, item_type, color, image_path)
     connection.commit()
 
 def get_all_clothing_items(cursor):

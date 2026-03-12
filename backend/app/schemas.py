@@ -3,6 +3,7 @@ from typing import Literal
 
 class ClothingCreate(BaseModel):
     category: Literal["top", "bottom"]
+    item_type: str
     color: str
     image_path: str
 

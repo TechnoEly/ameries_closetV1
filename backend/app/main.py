@@ -4,9 +4,16 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 import services.services as services
 import uvicorn
 import fastapi
+from fastapi.middleware.cors import CORSMiddleware
 
 
 app = fastapi.FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
 @app.get("/clothing")
 def get_clothing():
@@ -16,12 +23,12 @@ def get_clothing():
     return items
 
 @app.post("/clothing")
-def add_clothing(category: str, item_type: str, color: str):
+def add_clothing(category: str, item_type: str, color: str, image_path: str):
     category = category.lower()
     item_type = item_type.lower()
     color = color.lower()
     connection, cursor = services.database_setup()
-    services.add_clothing_item(category, item_type, color, cursor, connection)
+    services.add_clothing_item(category, item_type, color, image_path, cursor, connection)
     services.close_db_connection(connection)
     return {"message": "Clothing item added successfully!"}
 
@@ -89,4 +96,4 @@ def delete_outfit(outfit_id: int):
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=3000)

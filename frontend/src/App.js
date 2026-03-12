@@ -8,7 +8,7 @@ function App() {
   const [items, setItems] = useState([]);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/clothing/")
+    fetch("http://127.0.0.1:8000/clothing")
       .then(response => response.json())
       .then(data => setItems(data))
 }, []);
@@ -17,6 +17,9 @@ function App() {
     <div>
       <h1>Amerie's Closet</h1>
       <p>{items.length} items in closet</p>
+      {items.map(item => (
+      <p>{item[1]} - {item[2]} - {item[3]} - {item[4]}</p>
+      ))}
     </div>
   );
 }

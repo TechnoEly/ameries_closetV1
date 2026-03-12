@@ -11,7 +11,8 @@ def db_start(connection, cursor):
             id INTEGER PRIMARY KEY,
             category TEXT NOT NULL CHECK(category IN ('top', 'bottom')),
             item_type TEXT NOT NULL,
-        color TEXT NOT NULL
+            color TEXT NOT NULL,
+            image_path TEXT NOT NULL
         )
     """)
     cursor.execute("""
@@ -30,8 +31,8 @@ def get_item_id(cursor):
        cursor.execute("SELECT * FROM clothing_item")
        return cursor.fetchall()
 
-def insert_item(cursor, category, item_type, color):
-    cursor.execute("INSERT INTO clothing_item (category, item_type, color) VALUES (?, ?, ?)", (category, item_type, color))
+def insert_item(cursor, category, item_type, color, image_path):
+    cursor.execute("INSERT INTO clothing_item (category, item_type, color, image_path) VALUES (?, ?, ?, ?)", (category, item_type, color, image_path))
 
 def get_all_items(cursor):
         cursor.execute("SELECT * FROM clothing_item")
