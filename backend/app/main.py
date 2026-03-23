@@ -5,6 +5,9 @@ import services.services as services
 import uvicorn
 import fastapi
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi import File, UploadFile
+import uuid
+
 
 
 app = fastapi.FastAPI()
@@ -31,6 +34,18 @@ def add_clothing(category: str, item_type: str, color: str, image_path: str):
     services.add_clothing_item(category, item_type, color, image_path, cursor, connection)
     services.close_db_connection(connection)
     return {"message": "Clothing item added successfully!"}
+
+@app.post("/upload")
+async def upload_image(file: UploadFile):
+    contents = await file.read()
+    extension = file.filename.split(".")[-1]
+    filename = f"{uuid.uuid4()}.{extension}"
+    filepath = f"app/uploads/{filename}"
+    
+    with open(filepath, "wb") as f:
+        f.write(contents)
+    
+    return {"image_path": filepath}
 
 @app.delete("/clothing/{item_id}")
 def delete_clothing(item_id: int):
