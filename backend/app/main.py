@@ -1,6 +1,6 @@
 import sys
 import os
-import hashlib
+import bcrypt
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 import services.services as services
 import uvicorn
@@ -22,7 +22,10 @@ class ShareRequest(BaseModel):
     to_username: str
 
 def _hash(password: str) -> str:
-    return hashlib.sha256(password.encode()).hexdigest()
+    return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+
+def _verify(password: str, hashed: str) -> bool:
+    return bcrypt.checkpw(password.encode(), hashed.encode())
 
 def get_current_user(authorization: str = Header(None)):
     if not authorization:
@@ -71,7 +74,7 @@ def register(req: AuthRequest):
 def login(req: AuthRequest):
     connection, cursor = services.database_setup()
     user = services.get_user_by_username(cursor, req.username)
-    if not user or user["password_hash"] != _hash(req.password):
+    if not user or not _verify(req.password, user["password_hash"]):
         services.close_db_connection(connection)
         raise HTTPException(status_code=401, detail="Invalid username or password")
     token = str(uuid.uuid4())

@@ -1,0 +1,61 @@
+# ── Databases ─────────────────────────────────────────────────────────────────
+*.db
+*.sqlite
+*.sqlite3
+
+# ── User uploads (personal photos / clothing images) ──────────────────────────
+backend/app/uploads/
+uploads/
+
+# ── Python ────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# ── Virtual environments ───────────────────────────────────────────────────────
+venv/
+venv2/
+.venv/
+env/
+ENV/
+*venv*/
+
+# ── Environment / secrets ─────────────────────────────────────────────────────
+.env
+.env.*
+*.env
+secrets.py
+config.local.py
+*.key
+*.pem
+*.cert
+*.p12
+
+# ── Start script (contains absolute local paths) ──────────────────────────────
+start.sh
+
+# ── Node / frontend ────────────────────────────────────────────────────────────
+node_modules/
+frontend/build/
+npm-debug.log*
+yarn-error.log
+
+# ── OS files ──────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Editor / IDE ──────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ── Claude Code local settings ────────────────────────────────────────────────
+.claude/settings.local.json
+
+# ── Misc ──────────────────────────────────────────────────────────────────────
+*.log
+hello.txt
